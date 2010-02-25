@@ -1,0 +1,11 @@
+The format for converting xml to json is as follows. A tag is split into three
+things a name referencing its tag name, its attributes, and its children. As
+such, the format looks similar to: (Note: <> specify values that are arbitrary)
+
+{name:"<tagname>", 
+	attributes:{<attr1>:"<val1>", <attr2>:"<val2>", ...}, 
+	children:[<child1>, <child2>]}
+
+Children of a tag, may be a tag in which case the previous format is nested in 
+the children array or is text, in which case the value is placed in quotes inside
+the children array.
