@@ -4,24 +4,27 @@
 
 	<!-- omit xml declaration -->
 	<xsl:output method="xml" omit-xml-declaration="yes" />
-
+	<!-- stripping out whitespaces -->
+	<xsl:strip-space elements="*"/>
+	
 	<!-- grab tags -->
 	<xsl:template match="*">
 		<xsl:text>{</xsl:text>
 		<!-- add tag name -->
-		<xsl:text>name:"</xsl:text>
+		<xsl:text>"name":"</xsl:text>
 		<xsl:value-of select="name()" />
 		<xsl:text>"</xsl:text>
 		<!-- add attributes if any -->
 		<xsl:if test="@*">
 			<xsl:text>,</xsl:text>
 			<!-- add attributes hash, -->
-			<xsl:text>attributes:{</xsl:text>
+			<xsl:text>"attributes":{</xsl:text>
 			<!-- grab attributes -->
 			<xsl:for-each select="@*">
+				<xsl:text>"</xsl:text>
 				<!-- show key-value pair -->
 				<xsl:value-of select="name()" />
-				<xsl:text>:"</xsl:text>
+				<xsl:text>":"</xsl:text>
 				<xsl:value-of select="." />
 				<xsl:text>"</xsl:text>
 				<!-- don't show last comma -->
@@ -35,26 +38,24 @@
 		<xsl:if test="child::*|child::text()">
 			<xsl:text>,</xsl:text>
 			<!-- add children -->
-			<xsl:text>children:[</xsl:text>
+			<xsl:text>"children":[</xsl:text>
 			<xsl:for-each select="child::*|child::text()">
 				<xsl:choose>
 					<!-- if text -->
-					<xsl:when test="self::text()">
-						<!-- if text is not useless -->
-						<xsl:if test="string-length(normalize-space(.)) > 0">
-							<!-- add formatting for the text -->
-							<xsl:text>&#x0A;</xsl:text>
-							<xsl:for-each select="ancestor::*">
-								<xsl:text>&#x09;</xsl:text>
-							</xsl:for-each>
-							<!-- show the text in "" -->
-							<xsl:text>"</xsl:text>
-							<xsl:value-of select="."></xsl:value-of>
-							<xsl:text>"</xsl:text>
-							<!-- don't show last comma -->
-							<xsl:if test="position() != last()">
-								<xsl:text>,</xsl:text>
-							</xsl:if>
+					<xsl:when test="self::text()">		
+						<!-- add formatting for the text -->
+						<xsl:text>&#x0A;</xsl:text>
+						<xsl:for-each select="ancestor::*">
+							<xsl:text>&#x09;</xsl:text>
+						</xsl:for-each>
+						<!-- show the text as an independent child with "text" node -->
+						<xsl:text>{"text":"</xsl:text>
+						<!-- normalizing value for trimming spaces -->
+						<xsl:value-of select="normalize-space(.)"/>
+						<xsl:text>"}</xsl:text>
+						<!-- don't show last comma -->
+						<xsl:if test="position() != last()">
+							<xsl:text>,</xsl:text>
 						</xsl:if>
 					</xsl:when>
 					<!-- if not text -->
